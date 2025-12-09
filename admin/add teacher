@@ -1,0 +1,48 @@
+// Eman Fatima (SP23-BSE-010) POST /admin/addteacher 
+const express = require("express");
+const router = express.Router();
+const User = require("../models/User");
+const bcrypt = require("bcrypt");
+
+// POST /admin/addteacher
+// Creates a new teacher in User collection with role "teacher"
+router.post("/addteacher", async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create new teacher
+    const newTeacher = new User({
+      name,
+      email,
+      password: hashedPassword,
+      role: "teacher",
+      assignedClasses: [], // Default empty array
+      createdAt: new Date(),
+    });
+
+    await newTeacher.save();
+
+    // Hide password in the response
+    const { password: pw, ...teacherWithoutPassword } = newTeacher.toObject();
+
+    res.status(201).json({
+      message: "Teacher added successfully",
+      newTeacher: teacherWithoutPassword,
+    });
+  } catch (error) {
+    console.error("Error adding teacher:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+module.exports = router;
