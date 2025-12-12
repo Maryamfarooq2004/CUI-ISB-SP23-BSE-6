@@ -41,4 +41,40 @@ router.post('/addquiz', async (req, res) => {
   }
 });
 
+// DELETE route to delete a quiz by ID (SP23-BSE-037)
+router.delete('/quiz/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate that the ID is a valid MongoDB ObjectId
+    if (!id || !id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ 
+        error: 'Invalid quiz ID format' 
+      });
+    }
+
+    // Find and delete the quiz by ID
+    const deletedQuiz = await Quiz.findByIdAndDelete(id);
+
+    // Check if quiz was found and deleted
+    if (!deletedQuiz) {
+      return res.status(404).json({ 
+        error: 'Quiz not found' 
+      });
+    }
+
+    // Return success response
+    return res.status(200).json({
+      message: 'Quiz deleted successfully',
+      quiz: deletedQuiz
+    });
+
+  } catch (error) {
+    console.error('Error deleting quiz:', error);
+    return res.status(500).json({ 
+      error: 'Server error occurred while deleting quiz' 
+    });
+  }
+});
+
 module.exports = router;

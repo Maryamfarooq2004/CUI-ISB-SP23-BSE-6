@@ -45,3 +45,42 @@ router.get('/', async (req, res) => {
 
 module.exports = router;
 
+---
+
+## SP23-BSE-037 - Muhammad Huzaifa
+
+### Route: `DELETE /teacher/quiz/:id`
+
+**Description:** Deletes a quiz from the Quiz schema by its ID.
+
+**Implementation File:** `teachers/quizRoutes.js`
+
+**Parameters:**
+- `id` (URL param): The MongoDB ObjectId of the quiz to delete
+
+**Responses:**
+- `200 OK`: Quiz deleted successfully, returns the deleted quiz object
+- `400 Bad Request`: Invalid quiz ID format
+- `404 Not Found`: Quiz with specified ID not found
+- `500 Internal Server Error`: Server error during deletion
+
+**Example Usage:**
+```bash
+DELETE /teacher/quiz/507f1f77bcf86cd799439011
+```
+
+**Example Response:**
+```json
+{
+  "message": "Quiz deleted successfully",
+  "quiz": {
+    "_id": "507f1f77bcf86cd799439011",
+    "classId": "507f1f77bcf86cd799439012",
+    "title": "Midterm Quiz",
+    "questions": [...],
+    "submissions": [...],
+    "createdAt": "2025-01-01T00:00:00.000Z"
+  }
+}
+```
+
