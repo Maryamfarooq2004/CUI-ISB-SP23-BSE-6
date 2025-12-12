@@ -1,0 +1,42 @@
+// Muhammad Anees (SP23-BSE-030)
+// Method: GET
+// Path: /material/:id
+// Description: Downloads specific material file. Finds Material._id = :id and returns fileUrl.
+
+const express = require('express');
+const router = express.Router();
+
+// Import the Material Model based on the provided Schema [cite: 52]
+// Ensure the path matches where you saved your models
+const Material = require('../models/Material'); 
+
+
+
+
+router.get('/material/:id', async (req, res) => {
+    try {
+        const materialId = req.params.id;
+
+        // 1. Find the material by _id 
+        // The schema defines _id as an ObjectId [cite: 54]
+        const material = await Material.findById(materialId);
+
+        // 2. Check if material exists
+        if (!material) {
+            return res.status(404).json({ message: 'Material not found' });
+        }
+
+        // 3. Return the fileUrl as requested 
+        // In a real app, you might use res.download() or res.redirect(material.fileUrl)
+        // But strictly following the description "returns fileUrl":
+        res.status(200).json({
+            success: true,
+            title: material.title,   // [cite: 56]
+            fileUrl: material.fileUrl // [cite: 57]
+        });
+
+    } catch (error) {
+        console.error('Error fetching material:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
